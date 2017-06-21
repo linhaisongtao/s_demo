@@ -3,6 +3,7 @@ import pandas as pd
 import csv
 import datetime
 import os
+import model
 
 import sys
 
@@ -27,11 +28,11 @@ def getStock(code):
 
 
 # stock
-if not os.path.exists("hs300_" + now_time + ".csv"):
+if not os.path.exists("hs300.csv"):
     df = ts.get_hs300s()
-    df.to_csv("hs300_" + now_time + ".csv")
+    df.to_csv("hs300.csv")
     pass
-reader = csv.reader(open("hs300_" + now_time + ".csv"))
+reader = csv.reader(open("hs300.csv"))
 
 for i, row in enumerate(reader):
     if i != 0:
@@ -121,48 +122,76 @@ for i, s in enumerate(stockList):
 
     s['score'] = 0
     if (s['r5'] >= 15):
-        s['score'] = s['score'] + 10
+        s['score'] = s['score'] + 1
         pass
+    if (s['r3'] >= 15):
+        s['score'] = s['score'] + 1
+        pass
+    if (s['r1'] >= 15):
+        s['score'] = s['score'] + 1
+        pass
+    if (s['r'] >= 15):
+        s['score'] = s['score'] + 1
+        pass
+
     if (s['r5'] >= 12):
-        s['score'] = s['score'] + 10
+        s['score'] = s['score'] + 1
         pass
-    if (s['r5'] >= 10):
-        s['score'] = s['score'] + 10
+    if (s['r3'] >= 12):
+        s['score'] = s['score'] + 1
         pass
+    if (s['r1'] >= 12):
+        s['score'] = s['score'] + 1
+        pass
+    if (s['r'] >= 12):
+        s['score'] = s['score'] + 1
+        pass
+
     if (s['r5'] >= 8):
-        s['score'] = s['score'] + 10
+        s['score'] = s['score'] + 1
         pass
-    if (s['r5'] >= 6):
-        s['score'] = s['score'] + 60
+    if (s['r3'] >= 8):
+        s['score'] = s['score'] + 1
+        pass
+    if (s['r1'] >= 8):
+        s['score'] = s['score'] + 1
+        pass
+    if (s['r'] >= 8):
+        s['score'] = s['score'] + 1
         pass
 
     pass
 
 
 def cmp1(o1, o2):
-    if (o2['count'] - o1['count']) == 0:
+    if (o2['score'] - o1['score']) == 0:
         return (int)(10000 * (o2['r1'] - o1['r1']))
     else:
-        return o2['count'] - o1['count']
+        return o2['score'] - o1['score']
     pass
 
 
 stockList = sorted(stockList, cmp=cmp1)
 
-import codecs
+model.write_to_csv(stockList, "stock_select_" + now_time + ".csv")
+model.write_to_excel(stockList, "stock_select_" + now_time + ".xls")
 
-csv_file = open("stock_select_" + now_time + ".csv", "wb")
-csv_file.write(codecs.BOM_UTF8)
-csv_writer = csv.writer(csv_file)
-csv_writer.writerow(
-    ['code', 'name', 'count', 'score', 'pe', 'pb', 'r', 'r1', 'r3', 'r5', 'roe2017-1', 'roe2016', 'roe2015', 'roe2014',
-     'roe2013', 'roe2012'])
-for i, s in enumerate(stockList):
-    print i, s
-    csv_writer.writerow(
-        ["A" + s['code'], s['name'], s['count'], s['score'], s['pe'], s['pb'], "%.2f" % (s['r']), "%.2f" % s['r1'],
-         "%.2f" % s['r3'], "%.2f" % s['r5'], s['roe_2017_1'],
-         s['roe_2016_4'], s['roe_2015_4'], s['roe_2014_4'], s['roe_2013_4'], s['roe_2012_4']])
+import json
+
+selected_array = json.load(open("select.json"))
+selected_list = []
+for selected in selected_array:
+    s = getStock(selected)
+    if s:
+        selected_list.append(s)
+        pass
     pass
+selected_list = sorted(selected_list, cmp=cmp1)
+for i, s in enumerate(selected_list):
+    print i, s
+    pass
+
+model.write_to_csv(selected_list, "select_" + now_time + ".csv")
+model.write_to_excel(selected_list, "select_" + now_time + ".xls")
 
 print "success"
