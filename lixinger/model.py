@@ -50,21 +50,21 @@ def write_to_excel(list, file_name):
         c += 1
         sh.write(i + 1, c, "%.2f" % s['pb'])
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['r1'])
+        sh.write(i + 1, c, "%.2f%%" % (s['r1'] * 100))
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['r3'])
+        sh.write(i + 1, c, "%.2f%%" % (s['r3'] * 100))
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['r5'])
+        sh.write(i + 1, c, "%.2f%%" % (s['r5'] * 100))
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe2016'])
+        sh.write(i + 1, c, "%.2f%%" % (s['roe2016'] * 100))
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe2015'])
+        sh.write(i + 1, c, "%.2f%%" % (s['roe2015'] * 100))
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe2014'])
+        sh.write(i + 1, c, "%.2f%%" % (s['roe2014'] * 100))
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe2013'])
+        sh.write(i + 1, c, "%.2f%%" % (s['roe2013'] * 100))
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe2012'])
+        sh.write(i + 1, c, "%.2f%%" % (s['roe2012'] * 100))
         pass
     wb.save(file_name)
     pass
