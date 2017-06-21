@@ -142,6 +142,6 @@ def colorRed(o):
 
 
 import model
-model.write_to_excel(stockList, "stock_" + datetime.datetime.now().strftime("%Y-%m-%d") + ".xls")
+model.write_to_excel(stockList, "lixinger_stock_" + datetime.datetime.now().strftime("%Y-%m-%d") + ".xls")
 
 print "success!"
