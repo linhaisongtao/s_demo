@@ -44,15 +44,15 @@ def write_to_excel(list, file_name):
         c += 1
         sh.write(i + 1, c, s['code'])
         c += 1
-        sh.write(i + 1, c, "%.2f"%s['price'])
+        sh.write(i + 1, c, "%.2f" % s['price'])
         c += 1
         sh.write(i + 1, c, s['count'])
         c += 1
         sh.write(i + 1, c, s['score'])
         c += 1
-        sh.write(i + 1, c, s['pe'])
+        sh.write(i + 1, c, "%.2f" % s['pe'])
         c += 1
-        sh.write(i + 1, c, s['pb'])
+        sh.write(i + 1, c, "%.2f" % s['pb'])
         c += 1
         sh.write(i + 1, c, "%.2f" % s['r'])
         c += 1
@@ -62,17 +62,17 @@ def write_to_excel(list, file_name):
         c += 1
         sh.write(i + 1, c, "%.2f" % s['r5'])
         c += 1
-        sh.write(i + 1, c, s['roe_2017_1'])
+        sh.write(i + 1, c, "%.2f" % s['roe_2017_1'])
         c += 1
-        sh.write(i + 1, c, s['roe_2016_4'])
+        sh.write(i + 1, c, "%.2f" % s['roe_2016_4'])
         c += 1
-        sh.write(i + 1, c, s['roe_2015_4'])
+        sh.write(i + 1, c, "%.2f" % s['roe_2015_4'])
         c += 1
-        sh.write(i + 1, c, s['roe_2014_4'])
+        sh.write(i + 1, c, "%.2f" % s['roe_2014_4'])
         c += 1
-        sh.write(i + 1, c, s['roe_2013_4'])
+        sh.write(i + 1, c, "%.2f" % s['roe_2013_4'])
         c += 1
-        sh.write(i + 1, c, s['roe_2012_4'])
+        sh.write(i + 1, c, "%.2f" % s['roe_2012_4'])
         pass
     wb.save(file_name)
     pass
@@ -99,4 +99,37 @@ def write_to_csv(list, file_name):
              "%.2f" % s['r3'], "%.2f" % s['r5'], s['roe_2017_1'],
              s['roe_2016_4'], s['roe_2015_4'], s['roe_2014_4'], s['roe_2013_4'], s['roe_2012_4']])
         pass
+    pass
+
+
+def getStock(stockMap, code):
+    if stockMap.has_key(code):
+        return stockMap[code]
+        pass
+    pass
+
+
+def cmp1(o1, o2):
+    if (o2['score'] - o1['score']) == 0:
+        return (int)(10000 * (o2['r1'] - o1['r1']))
+    else:
+        return o2['score'] - o1['score']
+    pass
+
+def write_selected_stocks_xls(selectedList, stockMap, fileName):
+    selected_array = selectedList
+    selected_list = []
+    for selected in selected_array:
+        s = getStock(stockMap, selected)
+        if s:
+            selected_list.append(s)
+            pass
+        pass
+    selected_list = sorted(selected_list, cmp=cmp1)
+    for i, s in enumerate(selected_list):
+        print i, s
+        pass
+
+    # model.write_to_csv(selected_list, "select_" + now_time + ".csv")
+    write_to_excel(selected_list, fileName)
     pass

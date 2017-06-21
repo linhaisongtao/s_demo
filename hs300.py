@@ -13,11 +13,17 @@ MIN_R = 15
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-now_time = datetime.datetime.now().strftime("%Y-%m-%d_%H")
+now = datetime.datetime.now()
+now_time = now.strftime("%Y-%m-%d_%H%M")
+now_date = now.strftime("%Y-%m-%d")
 
 print "start " + now_time
 stockList = []
 stockMap = {}
+
+if (not os.path.exists('_stock')) or (not os.path.isdir('_stock')):
+    os.mkdir("_stock")
+    pass
 
 
 def getStock(code):
@@ -28,63 +34,64 @@ def getStock(code):
 
 
 # stock
-if not os.path.exists("hs300.csv"):
-    df = ts.get_hs300s()
-    df.to_csv("hs300.csv")
+if not os.path.exists("_stock/all.csv"):
+    df = ts.get_stock_basics()
+    df.to_csv("_stock/all.csv")
     pass
-reader = csv.reader(open("hs300.csv"))
+reader = csv.reader(open("_stock/all.csv"))
 
 for i, row in enumerate(reader):
     if i != 0:
         m = {}
-        m['code'] = row[1]
-        m['name'] = row[2]
+        m['code'] = row[0]
+        m['name'] = row[1]
         stockList.append(m)
         stockMap[m['code']] = m
         pass
     pass
 
-# pb,pe
-if not os.path.exists("all_stock_" + now_time + ".csv"):
-    df = ts.get_stock_basics()
-    df.to_csv("all_stock_" + now_time + ".csv")
-    pass
-reader = csv.reader(open("all_stock_" + now_time + ".csv"))
-for i, row in enumerate(reader):
-    if i != 0:
-        s = getStock(row[0])
-        if s:
-            s['pe'] = float(row[4])
-            s['pb'] = float(row[14])
-        pass
-    pass
-
-#price
-if not os.path.exists("price_" + now_time + ".csv"):
-    print "get price_" + now_time
+# price,pe,pb
+if not os.path.exists("_stock/price_" + now_date + ".csv"):
+    print "_stock/get price_" + now_date
     df = ts.get_today_all()
-    print "got price_" + now_time
-    df.to_csv("price_" + now_time + ".csv")
+    print "_stock/got price_" + now_date
+    df.to_csv("_stock/price_" + now_date + ".csv")
     pass
-reader = csv.reader(open("price_" + now_time + ".csv"))
+reader = csv.reader(open("_stock/price_" + now_date + ".csv"))
 for i, row in enumerate(reader):
     if i != 0:
         s = getStock(row[1])
         if s:
             s['price'] = float(row[4])
+            s['pe'] = float(row[12])
+            s['pb'] = float(row[13])
         pass
+    pass
+
+index = len(stockList) - 1
+while index >= 0:
+    s = stockList[index]
+    if not s.has_key('price'):
+        stockMap.pop(s['code'])
+        stockList.remove(s)
+        pass
+    index -= 1
+    pass
+
+if (now.hour <= 15):
+    os.remove("_stock/price_" + now_date + ".csv")
     pass
 
 
 # roe
 def fillROE(y, q):
-    if not os.path.exists("roe_" + str(y) + "_" + str(q) + ".csv"):
-        print "get", "roe_" + str(y) + "_" + str(q)
+    if not os.path.exists("_stock/roe_" + str(y) + "_" + str(q) + ".csv"):
+        print "get", "_stock/roe_" + str(y) + "_" + str(q)
         df = ts.get_profit_data(y, q)
-        print "got", "roe_" + str(y) + "_" + str(q)
-        df.to_csv("roe_" + str(y) + "_" + str(q) + ".csv", encoding='utf-8')
+        print "got", "_stock/roe_" + str(y) + "_" + str(q)
+        df.to_csv("_stock/roe_" + str(y) + "_" + str(q) + ".csv", encoding='utf-8')
         pass
-    reader = csv.reader(open("roe_" + str(y) + "_" + str(q) + ".csv"))
+    reader = csv.reader(open("_stock/roe_" + str(y) + "_" + str(q) + ".csv"))
     for i, row in enumerate(reader):
         if i != 0:
             s = getStock(row[1])
@@ -178,36 +185,20 @@ for i, s in enumerate(stockList):
 
     pass
 
+stockList = sorted(stockList, cmp=model.cmp1)
 
-def cmp1(o1, o2):
-    if (o2['score'] - o1['score']) == 0:
-        return (int)(10000 * (o2['r1'] - o1['r1']))
-    else:
-        return o2['score'] - o1['score']
+if (not os.path.exists('stock')) or (not os.path.isdir('stock')):
+    os.mkdir("stock")
     pass
 
+# model.write_to_csv(stockList, "stock_select_" + now_time + ".csv")
+model.write_to_excel(stockList, "stock/all_" + now_date + ".xls")
 
-stockList = sorted(stockList, cmp=cmp1)
+import source
 
-model.write_to_csv(stockList, "stock_select_" + now_time + ".csv")
-model.write_to_excel(stockList, "stock_select_" + now_time + ".xls")
-
-import json
-
-selected_array = json.load(open("select.json"))
-selected_list = []
-for selected in selected_array:
-    s = getStock(selected)
-    if s:
-        selected_list.append(s)
-        pass
-    pass
-selected_list = sorted(selected_list, cmp=cmp1)
-for i, s in enumerate(selected_list):
-    print i, s
-    pass
-
-model.write_to_csv(selected_list, "select_" + now_time + ".csv")
-model.write_to_excel(selected_list, "select_" + now_time + ".xls")
+model.write_selected_stocks_xls(source.get_hs300_codes(), stockMap, "stock/hs300_" + now_date + ".xls")
+model.write_selected_stocks_xls(source.get_selected_stocks(), stockMap, "stock/selected_" + now_date + ".xls")
+model.write_selected_stocks_xls(source.get_zz500_codes(), stockMap, "stock/zz500_" + now_date + ".xls")
+model.write_selected_stocks_xls(source.get_sz50_codes(), stockMap, "stock/sz50_" + now_date + ".xls")
 
 print "success"
