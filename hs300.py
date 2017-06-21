@@ -59,6 +59,22 @@ for i, row in enumerate(reader):
         pass
     pass
 
+#price
+if not os.path.exists("price_" + now_time + ".csv"):
+    print "get price_" + now_time
+    df = ts.get_today_all()
+    print "got price_" + now_time
+    df.to_csv("price_" + now_time + ".csv")
+    pass
+reader = csv.reader(open("price_" + now_time + ".csv"))
+for i, row in enumerate(reader):
+    if i != 0:
+        s = getStock(row[1])
+        if s:
+            s['price'] = float(row[4])
+        pass
+    pass
+
 
 # roe
 def fillROE(y, q):
