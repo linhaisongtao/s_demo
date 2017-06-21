@@ -142,7 +142,7 @@ def colorRed(o):
 
 
 import model
-model.write_to_excel(stockList, "lixinger_stock_" + datetime.datetime.now().strftime("%Y-%m-%d") + ".xls")
+model.write_to_excel(stockList, "lixinger/lixinger_stock_" + datetime.datetime.now().strftime("%Y-%m-%d") + ".xls")
 
 import os
 import tushare as ts
@@ -153,15 +153,5 @@ if (not os.path.exists('_source')) or (not os.path.isdir('_source')):
     os.mkdir("_source")
     pass
 
-def get_selected_stocks():
-    f = open('../_source/source.txt')
-    lines = f.readlines()
-    stocks = []
-    for l in lines:
-        stocks.append(l.replace("\n", ""))
-        pass
-    print stocks
-    return stocks
-    pass
 
 print "success!"

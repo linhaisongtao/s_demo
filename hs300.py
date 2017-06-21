@@ -201,4 +201,13 @@ model.write_selected_stocks_xls(source.get_selected_stocks(), stockMap, "stock/s
 model.write_selected_stocks_xls(source.get_zz500_codes(), stockMap, "stock/zz500_" + now_date + ".xls")
 model.write_selected_stocks_xls(source.get_sz50_codes(), stockMap, "stock/sz50_" + now_date + ".xls")
 
+import lixinger
+
+sl = lixinger.stockList
+sm = {}
+for s in sl:
+    sm[s['code']] = s
+    pass
+model.write_selected_stocks_xls(source.get_selected_stocks(), sm, "stock/lixinger_selected_" + now_date + ".xls")
+
 print "success"

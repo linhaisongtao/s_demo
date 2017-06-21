@@ -48,31 +48,78 @@ def write_to_excel(list, file_name):
         c += 1
         sh.write(i + 1, c, s['count'])
         c += 1
-        sh.write(i + 1, c, s['score'])
+        score = 0
+        if s.has_key('score'):
+            score = s['score']
+            pass
+        sh.write(i + 1, c, score)
         c += 1
         sh.write(i + 1, c, "%.2f" % s['pe'])
         c += 1
         sh.write(i + 1, c, "%.2f" % s['pb'])
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['r'])
+        r = 0
+        if s.has_key('r'):
+            r = s['r']
+            pass
+        sh.write(i + 1, c, "%.2f" % r)
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['r1'])
+        sh.write(i + 1, c, "%.3f" % s['r1'])
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['r3'])
+        sh.write(i + 1, c, "%.3f" % s['r3'])
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['r5'])
+        sh.write(i + 1, c, "%.3f" % s['r5'])
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe_2017_1'])
+        roe2017 = 0
+        if s.has_key('roe_2017_1'):
+            roe2017 = s['roe_2017_1']
+            pass
+        sh.write(i + 1, c, "%.3f" % roe2017)
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe_2016_4'])
+
+        if s.has_key('roe_2016_4'):
+            roe2016 = s['roe_2016_4']
+            pass
+        else:
+            roe2016 = s['roe2016']
+            pass
+        sh.write(i + 1, c, "%.3f" % roe2016)
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe_2015_4'])
+
+        if s.has_key('roe_2015_4'):
+            roe2015 = s['roe_2015_4']
+            pass
+        else:
+            roe2015 = s['roe2015']
+            pass
+        sh.write(i + 1, c, "%.3f" % roe2015)
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe_2014_4'])
+
+        if s.has_key('roe_2014_4'):
+            roe2014 = s['roe_2014_4']
+            pass
+        else:
+            roe2014 = s['roe2014']
+            pass
+        sh.write(i + 1, c, "%.3f" % roe2014)
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe_2013_4'])
+
+        if s.has_key('roe_2013_4'):
+            roe2013 = s['roe_2013_4']
+            pass
+        else:
+            roe2013 = s['roe2013']
+            pass
+        sh.write(i + 1, c, "%.3f" % roe2013)
         c += 1
-        sh.write(i + 1, c, "%.2f" % s['roe_2012_4'])
+
+        if s.has_key('roe_2012_4'):
+            roe2012 = s['roe_2012_4']
+            pass
+        else:
+            roe2012 = s['roe2012']
+            pass
+        sh.write(i + 1, c, "%.3f" % roe2012)
         pass
     wb.save(file_name)
     pass
@@ -110,11 +157,20 @@ def getStock(stockMap, code):
 
 
 def cmp1(o1, o2):
-    if (o2['score'] - o1['score']) == 0:
+    if o1.has_key('score'):
+        k1 = o1['score']
+        k2 = o2['score']
+        pass
+    else:
+        k1 = o1['count']
+        k2 = o2['count']
+        pass
+    if (k2 - k1) == 0:
         return (int)(10000 * (o2['r1'] - o1['r1']))
     else:
-        return o2['score'] - o1['score']
+        return k2 - k1
     pass
+
 
 def write_selected_stocks_xls(selectedList, stockMap, fileName):
     selected_array = selectedList
